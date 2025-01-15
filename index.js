@@ -4,10 +4,10 @@ const TelegramApi = require("node-telegram-bot-api")
 process.env.NTBA_FIX_350 = true;
 
 // токен тест бота
-const token = JSON.parse(fs.readFileSync("../keys.json", { encoding: 'utf8' }))['tgBotTEST']
+// const token = JSON.parse(fs.readFileSync("../keys.json", { encoding: 'utf8' }))['tgBotTEST']
 
 
-// const token = JSON.parse(fs.readFileSync("../keys.json", { encoding: 'utf8' }))['tgBotT']
+const token = JSON.parse(fs.readFileSync("../keys.json", { encoding: 'utf8' }))['tgBotT']
 
 
 

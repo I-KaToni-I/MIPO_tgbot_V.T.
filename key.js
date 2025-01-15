@@ -93,8 +93,6 @@ function autoTNames() {
     let arrTName = JSON.parse(file)
     
 
-
-
     let keyB = {
         "inline_keyboard": [
 
