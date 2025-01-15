@@ -3,6 +3,12 @@ const fs = require('fs');
 
 const {getInfoUser} = require("./user");
 
+Date.prototype.addHours = function(h) {
+    this.setTime(this.getTime() + (h*60*60*1000));
+    return this;
+}
+
+
 function beautifulTime(text) {
     let txt = text.split(':')
     if (txt[1].length === 1){
@@ -11,11 +17,20 @@ function beautifulTime(text) {
     return text
 }
 
+function beautifulDate(text) {
+    if (text.length === 1){
+        return "0"+text
+    }
+    return text
+}
+
+
+
 function getDay(chat_id, txt) {
     let file = fs.readFileSync("../CalendarJSON/CalendarJSON.json", { encoding: 'utf8' })
     let JN = JSON.parse(file)
     
-    let date = new Date()
+    let date = new Date().addHours(3)
     if (txt === 'сегодня') {
         date = new Date(date.getFullYear(), date.getMonth(), date.getDate())
     } else if (txt === 'завтра') {
@@ -25,8 +40,6 @@ function getDay(chat_id, txt) {
         date = new Date(txt[2], txt[1]-1, txt[0])
     }
 
-    // let group = getInfoUser(chat_id, 'group')
-    // Клемешов Алексей Станиславович  Екатерина Александровна  Богданчиков Сергей Александрович
     let nameT = getInfoUser(chat_id, 'nameT')
 
     let arrNeedEvent = []
@@ -35,6 +48,7 @@ function getDay(chat_id, txt) {
         
         JN[group].forEach(el => {
     
+            
             let arrEvent = Object.keys(el)[0].split(',')
             let arrStartEvent = arrEvent[0].split('.')
             let arrEndEvent = arrEvent[1].split('.')
@@ -45,6 +59,9 @@ function getDay(chat_id, txt) {
     
             if (+date >= +startEvent && +date <= +endEvent) {                
                 if (el[Object.keys(el)[0]].location.includes(nameT)) {
+
+                    el[Object.keys(el)[0]]['group'] = group
+                    
                     arrNeedEvent.push(el) 
                 }
             }
@@ -55,12 +72,24 @@ function getDay(chat_id, txt) {
 
     let finalTxt = ''
 
+    console.log(arrNeedEvent);
+    
+
     arrNeedEvent.forEach(el => {
         let obj = el[Object.keys(el)[0]]
-        
-        finalTxt += `<b>${beautifulTime(obj.dateTime[0])}-${beautifulTime(obj.dateTime[1])}</b>\n`
+
+
+        if (!finalTxt.includes(beautifulTime(obj.dateTime[0]))) {
+            finalTxt += `\n\n<b>${beautifulTime(obj.dateTime[0])}-${beautifulTime(obj.dateTime[1])}</b>\n`
+        } else {
+            finalTxt += `--И--\n`
+            
+        }
+        finalTxt += `Группа: ${obj.group}\n`
         finalTxt += `${obj.title}\n`
-        finalTxt += `${obj.location}\n\n`
+        finalTxt += `${obj.location.split('-')[0]}\n`
+
+        
     });
     
 
@@ -69,4 +98,4 @@ function getDay(chat_id, txt) {
 
 
 
-module.exports = {getDay}
+module.exports = {getDay, beautifulDate}
